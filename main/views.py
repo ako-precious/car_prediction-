@@ -9,6 +9,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType
 from pyspark.sql import SparkSession
 
+
 @api_view(['GET'])
 def ItemView(request):
     data = Item.objects.all()
@@ -18,8 +19,8 @@ def ItemView(request):
 
 @api_view(['POST','GET'])
 def PredictionView(request):
-    if request.method == "GET":
-        read = {
+    
+    read = {
                 "example": {
                     "Condition": 21,
                     "Vehicle_brand": 102,
@@ -78,7 +79,8 @@ def PredictionView(request):
                 "FT":"no of features: 1-60"
     
                 
-            }
+    }
+    if request.method == "GET":
         return Response(read)
     
     if request.method == "POST":
@@ -106,7 +108,6 @@ def PredictionView(request):
                 StructField("FT", IntegerType(), True)
             ])
             spark = SparkSession.builder.appName('car_price_prediction').getOrCreate()
-
             df = spark.createDataFrame(data, schema=schema)
             prd = Model.transform(df)
             cell_value = prd.select("prediction").collect()[0][0]
